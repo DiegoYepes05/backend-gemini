@@ -4,11 +4,13 @@ import 'dotenv/config';
 interface EnvVars {
   GEMINI_API_KEY: string;
   API_URL: string;
+  PORT: string;
 }
 const envSchema = joi
   .object({
     GEMINI_API_KEY: joi.string().required(),
     API_URL: joi.string().required(),
+    PORT: joi.string().default('3000'),
   })
   .unknown(true);
 
@@ -19,6 +21,7 @@ if (error) {
 }
 const envVars = value as EnvVars;
 export const env = {
-  gemini_api_key: envVars.GEMINI_API_KEY,
-  api_url: envVars.API_URL,
+  geminiApiKey: envVars.GEMINI_API_KEY,
+  apiUrl: envVars.API_URL,
+  port: envVars.PORT,
 };

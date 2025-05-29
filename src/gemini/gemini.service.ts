@@ -12,7 +12,7 @@ import { imageGenerationUseCase } from './use-cases/image-generation.use-case';
 @Injectable()
 export class GeminiService {
   private ai = new GoogleGenAI({
-    apiKey: env.gemini_api_key,
+    apiKey: process.env.GEMINI_API_KEY || env.geminiApiKey,
   });
   private chatHistory = new Map<string, Content[]>();
   async basicPrompt(basicPromptDto: BasicPromptDto) {
