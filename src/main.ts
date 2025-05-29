@@ -1,18 +1,34 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import * as express from 'express';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+const server = express();
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    }),
+async function createNestServer(expressInstance) {
+  const app = await NestFactory.create(
+    AppModule,
+    new ExpressAdapter(expressInstance),
   );
 
-  await app.listen(process.env.PORT ?? 3000);
-  console.log(process.env.PORT ?? 3000);
+  app.enableCors();
+
+  return app.init();
 }
-bootstrap();
+
+// Para desarrollo local
+if (process.env.NODE_ENV !== 'production') {
+  const port = process.env.PORT || 3000;
+  createNestServer(server)
+    .then(() =>
+      server.listen(port, () => {
+        console.log(`Server running on port ${port}`);
+      }),
+    )
+    .catch((err) => console.error('Error starting server', err));
+}
+
+// Para Vercel
+createNestServer(server);
+
+export default server;
